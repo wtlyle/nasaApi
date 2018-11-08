@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { PageHeader, Table } from 'react-bootstrap'
+import { PageHeader, Table, Tabs, Tab } from 'react-bootstrap'
 //so all we had to do was download yarn add react-bootstrap.
 //2. go to bootswatch v3
 //3. find a theme, save link of bootstrap.min.css
@@ -10,6 +10,7 @@ import './App.css';
 //https://api.nasa.gov/planetary/apod?api_key=lumoAnHY3MuiVO7AazYUFkzwDmjPKpJoD7gmfHFj
 import neoData from './sample-neo'
 import sampleIss from './sample-iss'
+
 //steps to get api data .
 //1. go to nasa api website, enter in info to receive key.
 //2. copy nasa link somewhere.
@@ -31,10 +32,11 @@ class App extends Component {
       startDate: `${today.getFullYear()}-${today.getMonth() +1}-${today.getDate()}`,
       apiUrl: "https://api.nasa.gov/neo/rest/v1/feed",
       rawData: neoData,
-      latitude: sampleIss.iss_position.latitude,
-      longitude: sampleIss.iss_position.longitude,
-      timestamp: sampleIss.timestamp,
-      asteroids: []
+      latitude: '',
+      longitude: '',
+      timestamp: '',
+      asteroids: [],
+      tab: true
     }
   }
 
@@ -65,11 +67,72 @@ class App extends Component {
     })
     this.setState({asteroids: newAsteroids})
   })
+
+
+  fetch("http://api.open-notify.org/iss-now.json").then((rawResponse) => {
+    console.log('iss now', rawResponse)
+    return rawResponse.json()
+  }).then((parsedResponse) => {
+    console.log(parsedResponse)
+    let iss = parsedResponse
+    let latitude = iss.iss_position.latitude
+    let longitude = iss.iss_position.longitude
+    let timestamp = iss.timestamp
+    this.setState({
+      latitude: latitude,
+      longitude: longitude,
+      timestamp: timestamp
+    })
+  })
 }
 
+onClick = () => {
+  this.setState({tab: !this.state.tab})
+}
 
+clickHandler = () => {
+  this.setState({tab: !this.state.tab})
+}
 
   render() {
+    // let asteroidTable =  <Table>
+    //                     <thead>
+    //                       <tr>
+    //                         <th>Name</th>
+    //                         <th>Estimated Diameter (feet)</th>
+    //                         <th>Date of Closest Approach</th>
+    //                         <th>Distance (Miles)</th>
+    //                         <th>Velocity (miles/hour)</th>
+    //                       </tr>
+    //                       </thead>
+    //                       <tbody>
+    //                       {asteroids.map(el=>
+    //                         <tr key={el.id}>
+    //                           <td>{el.name}</td>
+    //                           <td>{(el.diameterMax + el.diameterMin) / 2}</td>
+    //                           <td>{el.date}</td>
+    //                           <td>{el.distance}</td>
+    //                           <td>{el.velocity}</td>
+    //                         </tr>
+    //                       )}
+    //                     </tbody>
+    //                   </Table>
+
+                      // let iss =   <Table>
+                      // <thead>
+                      // <h3>International Space Station</h3>
+                      // <tr>
+                      // <th>Timestamp</th>
+                      // <th>Latitude</th>
+                      // <th>Longitude</th>
+                      // </tr>
+                      // </thead>
+                      // <tbody>
+                      // <td>{timestamp}</td>
+                      // <td>{latitude}</td>
+                      // <td>{longitude}</td>
+                      // </tbody>
+                      // </Table>
     // debugger
     let {asteroids} = this.state
     let {latitude} = this.state
@@ -78,48 +141,62 @@ class App extends Component {
     // debugger
     return (
       <div className="App">
+
         <PageHeader>
           <img style={{width: 70, height: 70}} src="https://cdn1.iconfinder.com/data/icons/science-2-2-flat/204/meteor-science-comet-512.png" />
           <span style={{paddingLeft: 10, color: 'gold', fontWeight: 'bold'}}>Meteor Watch</span>
         </PageHeader>
-        <Table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Estimated Diameter (feet)</th>
-              <th>Date of Closest Approach</th>
-              <th>Distance (Miles)</th>
-              <th>Velocity (miles/hour)</th>
-            </tr>
-            </thead>
-            <tbody>
-            {asteroids.map(el=>
-              <tr key={el.id}>
-                <td>{el.name}</td>
-                <td>{(el.diameterMax + el.diameterMin) / 2}</td>
-                <td>{el.date}</td>
-                <td>{el.distance}</td>
-                <td>{el.velocity}</td>
-              </tr>
-              )}
-            </tbody>
-        </Table>
-        <Table>
-          <thead>
-          <h3>International Space Station</h3>
-            <tr>
-              <th>Timestamp</th>
-              <th>Latitude</th>
-              <th>Longitude</th>
-            </tr>
-          </thead>
-          <tbody>
-            <td>{timestamp}</td>
-            <td>{latitude}</td>
-            <td>{longitude}</td>
-          </tbody>
-        </Table>
+        <div>
 
+        <ul className="nav nav-tabs">
+          <li className={(this.state.tab) ? 'active' : ''} onClick = {this.onClick}><a href="#asteroids" data-toggle="tab" aria-expanded="true">Armageddon Tracker</a></li>
+          <li className={(this.state.tab) ? '' : 'active'} onClick = {this.clickHandler}><a href="#iss" data-toggle="tab" aria-expanded="false">Space Station</a></li>
+        </ul>
+
+        <div id="myTabContent" class="tab-content">
+          <div className={(this.state.tab) ? 'tab-pane fade  active in' : 'tab-pane fade'} id="asteroids">
+            <Table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Estimated Diameter (feet)</th>
+                  <th>Date of Closest Approach</th>
+                  <th>Distance (Miles)</th>
+                  <th>Velocity (miles/hour)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {asteroids.map(el=>
+                <tr key={el.id}>
+                  <td>{el.name}</td>
+                  <td>{(el.diameterMax + el.diameterMin) / 2}</td>
+                  <td>{el.date}</td>
+                  <td>{el.distance}</td>
+                  <td>{el.velocity}</td>
+                </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
+          <div className={(this.state.tab) ? "tab-pane fade" : "tab-pane fade active in"} id="iss">
+            <Table>
+              <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <td>{timestamp}</td>
+                    <td>{latitude}</td>
+                    <td>{longitude}</td>
+              </tbody>
+            </Table>
+          </div>
+          </div>
+
+        </div>
 
 
       </div>
