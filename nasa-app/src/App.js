@@ -94,46 +94,12 @@ clickHandler = () => {
   this.setState({tab: !this.state.tab})
 }
 
-  render() {
-    // let asteroidTable =  <Table>
-    //                     <thead>
-    //                       <tr>
-    //                         <th>Name</th>
-    //                         <th>Estimated Diameter (feet)</th>
-    //                         <th>Date of Closest Approach</th>
-    //                         <th>Distance (Miles)</th>
-    //                         <th>Velocity (miles/hour)</th>
-    //                       </tr>
-    //                       </thead>
-    //                       <tbody>
-    //                       {asteroids.map(el=>
-    //                         <tr key={el.id}>
-    //                           <td>{el.name}</td>
-    //                           <td>{(el.diameterMax + el.diameterMin) / 2}</td>
-    //                           <td>{el.date}</td>
-    //                           <td>{el.distance}</td>
-    //                           <td>{el.velocity}</td>
-    //                         </tr>
-    //                       )}
-    //                     </tbody>
-    //                   </Table>
+refresh = () => {
+  window.location.reload()
+}
 
-                      // let iss =   <Table>
-                      // <thead>
-                      // <h3>International Space Station</h3>
-                      // <tr>
-                      // <th>Timestamp</th>
-                      // <th>Latitude</th>
-                      // <th>Longitude</th>
-                      // </tr>
-                      // </thead>
-                      // <tbody>
-                      // <td>{timestamp}</td>
-                      // <td>{latitude}</td>
-                      // <td>{longitude}</td>
-                      // </tbody>
-                      // </Table>
-    // debugger
+  render() {
+
     let {asteroids} = this.state
     let {latitude} = this.state
     let {longitude} = this.state
@@ -177,6 +143,7 @@ clickHandler = () => {
                 )}
               </tbody>
             </Table>
+              <a href = '/#asteroids'><button>Refresh</button></a>
           </div>
           <div className={(this.state.tab) ? "tab-pane fade" : "tab-pane fade active in"} id="iss">
             <Table>
@@ -193,6 +160,7 @@ clickHandler = () => {
                     <td>{longitude}</td>
               </tbody>
             </Table>
+            <button onClick={this.refresh}>Refresh</button>
           </div>
           </div>
 
